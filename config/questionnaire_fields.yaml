@@ -1,0 +1,80 @@
+# Questionnaire fields configuration
+# Each field can be customized with the following properties:
+# - active: true/false - whether to display this field
+# - type: "multiple_choice", "text", "numeric"
+# - field_name: internal name for storing data (no spaces, lowercase)
+# - title: label/prompt shown to users
+# - options: (for multiple_choice only) list of button labels
+# - hint_text: (for text/numeric only) placeholder text
+# - max_length: (for text only) maximum number of characters
+# - required_to_proceed: true/false - whether this field must be filled to proceed
+
+- active: true
+  type: "text"
+  field_name: "name"
+  title: "Name"
+  hint_text: "What is your name?"
+  required_to_proceed: true
+
+- active: true
+  type: "text"
+  field_name: "email"
+  title: "e-mail address"
+  hint_text: "Please enter your e-mail address"
+  required_to_proceed: true
+
+- active: true
+  type: "numeric"
+  field_name: "age"
+  title: "Age"
+  hint_text: "Enter your age"
+  required_to_proceed: true
+
+- active: true
+  type: "multiple_choice"
+  field_name: "gender"
+  title: "What best describes your gender?"
+  options: ["Female", "Male", "Non-binary/Other", "Prefer not to say"]
+  required_to_proceed: true
+
+- active: true
+  type: "text"
+  field_name: "nationality"
+  title: "Nationality"
+  hint_text: "Enter your nationality"
+  required_to_proceed: true
+
+- active: true
+  type: "text"
+  field_name: "lived_mostly_in"
+  title: "I spent most of my life living in"
+  hint_text: "Enter a country name"
+  required_to_proceed: true
+
+- active: false
+  type: "multiple_choice"
+  field_name: "watch_olympics"
+  title: "During an Olympic year, I generally spend around ___ hours watching the Olympics:"
+  options: ["0-3 hrs", "3-10hrs", "10-20hr", "20hr+"]
+  required_to_proceed: true
+
+- active: true
+  type: "numeric"
+  field_name: "coach_exp"
+  title: ""
+  hint_text: "Experience as a coach (years)"
+  required_to_proceed: true
+
+- active: true
+  type: "numeric"
+  field_name: "watch_exp"
+  title: ""
+  hint_text: "Experience regularly watching soccer (years)"
+  required_to_proceed: true
+
+- active: true
+  type: "multiple_choice"
+  field_name: "license"
+  title: "Coaching License:"
+  options: ["None", "B", "A", "Pro"]
+  required_to_proceed: true

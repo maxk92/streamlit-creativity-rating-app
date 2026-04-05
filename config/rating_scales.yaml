@@ -1,0 +1,75 @@
+# Rating scales configuration
+
+# ============================================================================
+# GROUPS (optional)
+# Groups allow you to specify that a certain number of ratings from a set
+# of scales must be changed before the user can proceed.
+#
+# Group properties:
+# - title: descriptive name (for documentation purposes)
+# - id: unique identifier used to reference this group
+# - number_of_ratings: how many scales from this group must be rated to proceed
+# - error_msg: custom error message shown when requirement not met
+#
+# Example:
+# groups:
+#   - title: "Emotion Ratings"
+#     id: "emotions"
+#     number_of_ratings: 3
+#     error_msg: "Please rate at least 3 different emotions before proceeding"
+# ============================================================================
+
+# ============================================================================
+# RATING SCALES
+# Each scale can be customized with the following properties:
+# - active: true/false - whether to display this scale
+# - type: "discrete", "slider", or "text"
+# - title: the name of the scale shown to users
+# - label_low: label shown at the low end of the scale
+# - label_high: label shown at the high end of the scale
+# - values: (for discrete type only) list of discrete values to display [e.g., [1,2,3,4,5,6,7] or [-2,-1,0,1,2]]
+# - slider_min: (for slider type only) minimum value of the slider
+# - slider_max: (for slider type only) maximum value of the slider
+# - initial_state: (for slider type only) initial position of slider: "low" (min), "center" (middle), or "high" (max) (default: "low")
+# - required_to_proceed: true/false - whether user must provide input for this scale to proceed (default: true)
+# - group: (optional) group ID this scale belongs to
+# ============================================================================
+
+  # Example of a text input scale (inactive by default)
+  # Uncomment to add a free-text comments field
+  #- active: true
+  #  type: "text"
+  #  title: "Comments"
+  #  label_low: ""
+  #  label_high: ""
+
+  # Example of a 5-point discrete scale (inactive by default)
+  - active: true
+    type: "discrete"
+    title: "Creativity Rating"
+    label_low: "not creative"
+    label_high: "very creative"
+    values: [1, 2, 3, 4, 5, 6, 7]
+
+  # Example of a discrete scale with custom labels (e.g., -2 to +2)
+  - active: true
+    type: "discrete"
+    title: "Technical Correctness"
+    label_low: "not technically correct"
+    label_high: "very technically correct"
+    values: [1, 2, 3, 4, 5, 6, 7]
+  
+  - active: true
+    type: "discrete"
+    title: "Aesthetic Appeal"
+    label_low: "not appealing"
+    label_high: "very appealing"
+    values: [1, 2, 3, 4, 5, 6, 7]
+  
+  - active: false
+    type: "slider"
+    title: "Random"
+    label_low: "0%"
+    label_high: "100%"
+    slider_min: 0
+    slider_max: 1

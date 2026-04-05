@@ -1,0 +1,69 @@
+# ============================================================
+# Page text content
+# Customize per study/deployment. All values support markdown.
+# ============================================================
+
+welcome:
+  body: |
+    ## Welcome!
+
+    You will be receiving specific information regarding the study soon. Here you will find an overview of the steps involved in the study:
+
+    ### Instructions:
+
+    1. **Login**: First, you'll indicate whether you've participated before
+    2. **Questionnaire**: New users will complete a brief demographic questionnaire
+    3. **Familiarization**: You'll go through practice trials to get used to the rating interface
+    4. **Rating**: You'll watch video clips and rate various aspects of each clip
+
+    ### Important Notes:
+
+    - Please complete ratings in a quiet environment without distractions
+    - All data is anonymized using a generated user ID
+    - You can take breaks between videos — your progress is saved
+
+    ---
+
+    **Ready to begin?** Click the button below to proceed.
+
+pre_familiarization:
+  body: |
+    ### Welcome to the Emotion Recognition Survey!
+
+    #### Please read the following instructions carefully!
+
+    You will be shown a series of images and videos of athletes, each for 2 seconds, after which you have to answer 2 simple questions:
+
+    1. What emotions are being shown by the athlete you just saw? You have to select the **appropriate emotions** from the given options:
+    Angry, Happy, Sad, Scared, Surprised, Disgusted, Contempt/Hate/Disdain, and Neutral.
+
+    2. Did the athlete **win or lose** the match/contest?
+
+    For each clip in the survey, please indicate whether the athlete won or lost, and rate the emotions you observe. You can pick multiple emotions (as many as you need). Each emotion is rated independently on a 0 to 100 scale. Each of these emotions has to be rated separately.
+
+    Neutral emotion is used when you do not see any specific emotions at all. It is used when the other mentioned emotions are absent.
+
+    Thus, Neutral would be 0 if other emotions are present, and 100 if no other emotions are visible or present according to you.
+
+    Now, if you have understood these instructions, we will have 3 practice clips, followed by a message, after which your survey will begin. Please press start below, to begin your practice trial.
+
+post_familiarization:
+  success_message: |
+    ### Great job!
+
+    You have now completed the familiarisation trials. You should now be well-versed with the type of stimulus and expected responses.
+  body: |
+    You will now begin the survey. Please pay maximum attention as possible throughout the trial, and try to be as accurate as possible in your selection of the emotions and result estimates.
+
+    Remember, you can pick as many emotions as you like for each of the clips you are about to see, but you cannot keep all emotions at 0 — if that is the case, Neutral must be greater than 0.
+
+    Good luck and have fun!
+
+completion:
+  heading: "🎉 All Done!"
+  body: |
+    ### Thank you for your participation!
+
+    You have completed rating all available videos.
+
+    Your responses have been saved and will contribute to our research.
