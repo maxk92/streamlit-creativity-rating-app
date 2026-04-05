@@ -1,6 +1,6 @@
-# Streamlit Rating App
+# Soccer Creativity Rating App
 
-A web application for collecting subjective ratings of video clips. Participants watch short video clips and rate them on configurable dimensions. Built with Streamlit; supports local and Google Sheets/Drive storage.
+A web application for collecting subjective creativity ratings of soccer actions from video clips. Participants watch short clips of soccer actions and rate them on creativity, technical correctness, and aesthetic appeal. Built with Streamlit; supports local and Google Sheets/Drive storage.
 
 ---
 
@@ -10,7 +10,7 @@ Requires Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone <repo-url>
-cd 4_streamlit-rating-app
+cd streamlit-creativity-app
 uv sync                  # creates .venv and installs all dependencies
 ```
 

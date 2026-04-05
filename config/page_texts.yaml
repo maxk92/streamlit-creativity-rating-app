@@ -7,20 +7,20 @@ welcome:
   body: |
     ## Welcome!
 
-    You will be receiving specific information regarding the study soon. Here you will find an overview of the steps involved in the study:
+    Thank you for taking part in this study on **creativity in soccer**. Here is an overview of what to expect:
 
-    ### Instructions:
+    ### Steps:
 
-    1. **Login**: First, you'll indicate whether you've participated before
-    2. **Questionnaire**: New users will complete a brief demographic questionnaire
-    3. **Familiarization**: You'll go through practice trials to get used to the rating interface
-    4. **Rating**: You'll watch video clips and rate various aspects of each clip
+    1. **Login**: Indicate whether you have participated before
+    2. **Questionnaire**: New participants complete a brief background questionnaire
+    3. **Familiarization**: Go through a few practice clips to get used to the rating interface
+    4. **Rating**: Watch short soccer action clips and rate each one on several dimensions
 
     ### Important Notes:
 
     - Please complete ratings in a quiet environment without distractions
-    - All data is anonymized using a generated user ID
-    - You can take breaks between videos — your progress is saved
+    - All data is anonymized using a generated participant ID — no personal information is stored
+    - You can take breaks between clips; your progress is saved automatically
 
     ---
 
@@ -28,42 +28,41 @@ welcome:
 
 pre_familiarization:
   body: |
-    ### Welcome to the Emotion Recognition Survey!
+    ### Instructions — Please read carefully!
 
-    #### Please read the following instructions carefully!
+    You will be shown a series of short video clips of soccer actions. For each clip, you will be asked to rate the action on the following dimensions:
 
-    You will be shown a series of images and videos of athletes, each for 2 seconds, after which you have to answer 2 simple questions:
+    - **Creativity**: How creative was this action? (1 = not creative at all, 7 = extremely creative)
+    - **Technical Correctness**: How technically correct was the execution? (1 = not technically correct, 7 = very technically correct)
+    - **Aesthetic Appeal**: How aesthetically appealing was the action? (1 = not appealing, 7 = very appealing)
 
-    1. What emotions are being shown by the athlete you just saw? You have to select the **appropriate emotions** from the given options:
-    Angry, Happy, Sad, Scared, Surprised, Disgusted, Contempt/Hate/Disdain, and Neutral.
+    #### Tips for rating creativity:
 
-    2. Did the athlete **win or lose** the match/contest?
+    A soccer action can be considered creative if it is **novel, surprising, or unexpected** given the game situation — yet still **effective or intentional**. Pure technical excellence alone does not make an action creative; creativity involves an element of originality or ingenuity.
 
-    For each clip in the survey, please indicate whether the athlete won or lost, and rate the emotions you observe. You can pick multiple emotions (as many as you need). Each emotion is rated independently on a 0 to 100 scale. Each of these emotions has to be rated separately.
+    You may re-watch each clip as many times as you like before submitting your ratings.
 
-    Neutral emotion is used when you do not see any specific emotions at all. It is used when the other mentioned emotions are absent.
-
-    Thus, Neutral would be 0 if other emotions are present, and 100 if no other emotions are visible or present according to you.
-
-    Now, if you have understood these instructions, we will have 3 practice clips, followed by a message, after which your survey will begin. Please press start below, to begin your practice trial.
+    We will now start with **3 practice clips** so you can familiarise yourself with the interface. Press **Start** below to begin the practice.
 
 post_familiarization:
   success_message: |
-    ### Great job!
+    ### Well done!
 
-    You have now completed the familiarisation trials. You should now be well-versed with the type of stimulus and expected responses.
+    You have completed the practice trials and should now be comfortable with the rating interface.
   body: |
-    You will now begin the survey. Please pay maximum attention as possible throughout the trial, and try to be as accurate as possible in your selection of the emotions and result estimates.
+    The main rating task will now begin.
 
-    Remember, you can pick as many emotions as you like for each of the clips you are about to see, but you cannot keep all emotions at 0 — if that is the case, Neutral must be greater than 0.
+    You will see a series of soccer action clips. For each clip, please rate it on **creativity**, **technical correctness**, and **aesthetic appeal** using the 1–7 scales provided.
 
-    Good luck and have fun!
+    Take your time, re-watch clips as needed, and try to be as accurate as possible. There are no right or wrong answers — we are interested in your personal perception.
+
+    Good luck and thank you for your contribution!
 
 completion:
-  heading: "🎉 All Done!"
+  heading: "All Done!"
   body: |
     ### Thank you for your participation!
 
-    You have completed rating all available videos.
+    You have finished rating all available clips.
 
-    Your responses have been saved and will contribute to our research.
+    Your responses have been saved and will contribute to our research on creativity in soccer.
