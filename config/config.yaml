@@ -1,0 +1,105 @@
+# ============================================================
+# App metadata (used in browser tab and page header)
+# ============================================================
+app:
+  title: "Creativity Rating App"
+  icon: "football"  # emoji or leave empty
+
+# ============================================================
+# Paths
+# ============================================================
+paths:
+  # Metadata source: "local" or "gdrive"
+  # - "local": Load from metadata_path on the local filesystem
+  # - "gdrive": Download from Google Drive (file ID set in .streamlit/secrets.toml as gdrive.metadata_file_id)
+  #   metadata_path is still required in both modes to determine the file extension (.duckdb or .csv)
+  metadata_source: "gdrive"
+  metadata_path: "data/statsbomb_event_data.duckdb"
+
+  # Video source: "local" or "gdrive"
+  # - "local": Load videos from local filesystem (video_path)
+  # - "gdrive": Load videos from Google Drive (folder IDs configured in .streamlit/secrets.toml)
+  video_source: "gdrive"
+
+  # Local filesystem paths (used when video_source = "local")
+  # path to external drive on Linux
+  #video_path: "/media/max/Elements/videos_events_sample"
+
+  # path to external drive on macOS
+  #video_path: "/Volumes/Elements/videos_all"
+
+  #video_path: "data/videos/"
+
+  # Familiarization videos (always the same 3 videos for all users)
+  #familiarization_video_path: "/data/videos_familiarization"
+
+# ============================================================
+# Settings
+# ============================================================
+settings:
+  min_ratings_per_video: 1
+  questionnaire_fields_file: "config/questionnaire_fields.yaml"
+  rating_scales_file: "config/rating_scales.yaml"
+  page_texts_file: "config/page_texts.yaml"
+
+  # --- Video display ---
+  display_metadata: true       # Show metadata bar (team, player, etc.) above video
+  display_pitch: true          # Show pitch visualization next to video
+  video_playback_mode: "loop"  # "loop" = repeats, "once" = plays once without controls
+  video_player_height: 600     # Height in pixels for "once" playback mode
+
+  # --- Rating interface ---
+  display_mode: "combined"  # "combined" = video + scales together; "separate" = video screen then rating screen
+  rating_section_heading: "Please rate the action on the following dimensions:"
+  show_action_not_recognized: true  # Show the "Action not recognized" button
+
+  # --- Pitch visualization (used when display_pitch: true) ---
+  pitch_type: "statsbomb"   # mplsoccer pitch type
+  pitch_color: "grass"      # pitch background color
+  pitch_arrow_color: "blue"
+  pitch_arrow_width: 2
+  pitch_arrow_headwidth: 10
+  pitch_arrow_headlength: 5
+  pitch_marker_color: "blue"
+  pitch_marker_size: 10
+  video_pitch_column_ratio: [55, 45]  # Column width ratio [video, pitch]
+
+  # --- Metadata columns to display above the video ---
+  metadata_to_show:
+    - label: "Team"
+      column: "team"
+    - label: "Player"
+      column: "player"
+    - label: "Jersey #"
+      column: "jersey_number"
+    - label: "Type"
+      column: "type"
+    - label: "Body Part"
+      column: "bodypart"
+
+  # --- Familiarization ---
+  enable_familiarization: false  # Set to false to skip all familiarization screens
+
+  # --- Video selection ---
+  number_of_videos: null  # Maximum videos per session (null = all available)
+
+  # Stratified sampling (optional — leave commented out for simple random sampling)
+  #variables_for_stratification:
+  #  - variable: "LowHighPD"
+  #    levels: ["Low", "High"]
+  #    proportions: [0.5, 0.5]  # Must sum to 1.0
+  #  - variable: "WinLose"
+  #    levels: ["Win", "Loss"]
+  #    proportions: [0.5, 0.5]
+
+  # --- Page skip settings (for development or specific deployments) ---
+  skip_welcome: false
+  skip_login: false
+  skip_consent: false
+  skip_questionnaire: false
+
+  # --- Storage ---
+  # "local"  - JSON files only (for development)
+  # "online" - Google Sheets + Google Drive JSON (for production)
+  # "both"   - All three (maximum redundancy)
+  storage_mode: "online"  # use "online" or "both" for production deployment
