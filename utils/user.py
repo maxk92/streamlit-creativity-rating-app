@@ -16,7 +16,6 @@ class User:
         self.gender = 'Not specified'
         self.age = 0
         self.nationality = ''
-        self.player_exp = 0
         self.coach_exp = 0
         self.watch_exp = 0
         self.license = 'Not specified'
@@ -67,8 +66,6 @@ class User:
             self.age = int(value) if value else 0
         elif field_name == 'nationality':
             self.nationality = value
-        elif field_name == 'player_exp':
-            self.player_exp = int(value) if value else 0
         elif field_name == 'coach_exp':
             self.coach_exp = int(value) if value else 0
         elif field_name == 'watch_exp':
@@ -87,7 +84,6 @@ class User:
             'age': self.age,
             'nationality': self.nationality,
             'license': self.license,
-            'player_exp': self.player_exp,
             'coach_exp': self.coach_exp,
             'watch_exp': self.watch_exp,
             'saved_at': datetime.now().isoformat(timespec='seconds'),

@@ -213,7 +213,7 @@ def show():
         return
 
     # Initialize video player state
-    if 'video_initialized' not in st.session_state:
+    if not st.session_state.get('video_initialized', False):
         initialize_video_player(config)
 
     # Check if there are videos to rate
@@ -324,23 +324,16 @@ def initialize_video_player(config):
         print(f"[WARNING] Error filtering fully-rated videos: {e}")
         videos_to_rate = unrated_videos
 
-    # Load metadata FIRST (before sampling) to enable stratification
+    # Load metadata (independent of videos_to_rate so it's always available)
     df_metadata = pd.DataFrame()
     try:
-        if videos_to_rate:
-            # Get event IDs from video filenames
-            event_ids = [v.replace('.mp4', '') for v in videos_to_rate]
-
-            # Detect file type and load metadata accordingly
-            if not metadata_path:
-                print("[WARNING] No metadata path available, skipping metadata load")
-            elif metadata_path.endswith('.csv'):
-                # Load from CSV
-                df_full = pd.read_csv(metadata_path)
-                df_metadata = df_full[df_full['id'].isin(event_ids)]
-            else:
-                print(f"[WARNING] Unsupported metadata file type: {metadata_path}")
-                df_metadata = pd.DataFrame()
+        if not metadata_path:
+            print("[WARNING] No metadata path available, skipping metadata load")
+        elif metadata_path.endswith('.csv'):
+            df_metadata = pd.read_csv(metadata_path)
+            print(f"[INFO] Loaded {len(df_metadata)} metadata rows from CSV")
+        else:
+            print(f"[WARNING] Unsupported metadata file type: {metadata_path}")
     except Exception as e:
         print(f"[WARNING] Failed to load metadata: {e}")
         df_metadata = pd.DataFrame()
@@ -368,11 +361,6 @@ def initialize_video_player(config):
     st.session_state.videos_to_rate = videos_to_rate
     st.session_state.current_video_index = 0
     # Note: video_path or gdrive_folder_id already set above based on video_source
-
-    # Filter metadata to only selected videos
-    if not df_metadata.empty:
-        selected_event_ids = [v.replace('.mp4', '') for v in videos_to_rate]
-        df_metadata = df_metadata[df_metadata['id'].isin(selected_event_ids)]
 
     st.session_state.metadata = df_metadata
     st.session_state.video_initialized = True
@@ -540,9 +528,9 @@ def display_rating_interface(action_id, video_filename, config):
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col1:
-        if st.button("◀️ Back to Questionnaire", use_container_width=True):
+        if st.button("◀️ Back to Login Screen", use_container_width=True):
             if st.session_state.get('confirm_back', False):
-                st.session_state.page = 'questionnaire'
+                st.session_state.page = 'login'
                 st.session_state.user_id_confirmed = False
                 st.session_state.video_initialized = False
                 st.rerun()
@@ -672,8 +660,8 @@ def show_completion_message():
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col1:
-        if st.button("◀️ Back to Questionnaire", use_container_width=True):
-            st.session_state.page = 'questionnaire'
+        if st.button("◀️ Back to Login Screen", use_container_width=True):
+            st.session_state.page = 'login'
             st.session_state.user_id_confirmed = False
             st.session_state.video_initialized = False
             st.rerun()

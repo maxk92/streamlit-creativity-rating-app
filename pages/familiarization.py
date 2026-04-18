@@ -267,9 +267,32 @@ def initialize_familiarization(config):
             print(f"[ERROR] Error loading videos from {familiarization_path}: {e}")
             all_videos = []
 
+    # Load metadata (same logic as initialize_video_player)
+    metadata_path = config['paths'].get('metadata_path', '')
+    metadata_source = config['paths'].get('metadata_source', 'local')
+    df_metadata = pd.DataFrame()
+    if metadata_source == 'gdrive' and metadata_path:
+        try:
+            from utils.gdrive_manager import download_file_to_temp
+            filename = os.path.basename(metadata_path)
+            file_id = st.secrets["gdrive"]["metadata_file_id"]
+            temp_path = download_file_to_temp(file_id, filename)
+            if temp_path:
+                metadata_path = temp_path
+        except Exception as e:
+            print(f"[WARNING] Failed to download metadata for familiarization: {e}")
+            metadata_path = None
+    if metadata_path:
+        try:
+            if metadata_path.endswith('.csv'):
+                df_metadata = pd.read_csv(metadata_path)
+        except Exception as e:
+            print(f"[WARNING] Failed to load metadata for familiarization: {e}")
+
     # Store in session state
     st.session_state.familiarization_videos = all_videos
     st.session_state.familiarization_video_index = 0
+    st.session_state.familiarization_metadata = df_metadata
     st.session_state.familiarization_initialized = True
 
 def _resolve_famil_video_path(video_filename):
@@ -306,6 +329,8 @@ def display_famil_video_screen(video_filename, config):
     """Show the video-only screen for a familiarization trial (separate mode)."""
     current_index = st.session_state.familiarization_video_index
     total_videos = len(st.session_state.familiarization_videos)
+    action_id = os.path.splitext(video_filename)[0]
+    metadata = st.session_state.get('familiarization_metadata', pd.DataFrame())
 
     st.info(f"🎯 **Familiarization Trial — Video {current_index + 1} of {total_videos}**. These ratings will not be saved.")
 
@@ -319,8 +344,8 @@ def display_famil_video_screen(video_filename, config):
         config=config,
         rating_scales=[],
         key_prefix="famil_scale_",
-        action_id=None,
-        metadata=None,
+        action_id=action_id,
+        metadata=metadata,
         display_video_func=display_video_with_mode,
         display_mode='video_only'
     )
@@ -338,6 +363,8 @@ def display_famil_rating_screen(video_filename, config):
     rating_scales = st.session_state.rating_scales
     current_index = st.session_state.familiarization_video_index
     total_videos = len(st.session_state.familiarization_videos)
+    action_id = os.path.splitext(video_filename)[0]
+    metadata = st.session_state.get('familiarization_metadata', pd.DataFrame())
 
     st.info(f"🎯 **Familiarization Rating {current_index + 1} of {total_videos}**. These ratings will not be saved.")
 
@@ -347,8 +374,8 @@ def display_famil_rating_screen(video_filename, config):
         config=config,
         rating_scales=rating_scales,
         key_prefix="famil_scale_",
-        action_id=None,
-        metadata=None,
+        action_id=action_id,
+        metadata=metadata,
         display_video_func=display_video_with_mode,
         display_mode='rating_only'
     )
@@ -387,6 +414,8 @@ def display_famil_rating_screen(video_filename, config):
 def display_familiarization_interface(video_filename, config):
     """Display the familiarization rating interface (combined mode)."""
     rating_scales = st.session_state.rating_scales
+    action_id = os.path.splitext(video_filename)[0]
+    metadata = st.session_state.get('familiarization_metadata', pd.DataFrame())
 
     video_path, video_filename = _resolve_famil_video_path(video_filename)
     if video_path is None:
@@ -405,8 +434,8 @@ def display_familiarization_interface(video_filename, config):
         config=config,
         rating_scales=rating_scales,
         key_prefix="famil_scale_",
-        action_id=None,
-        metadata=None,
+        action_id=action_id,
+        metadata=metadata,
         header_content=show_familiarization_header,
         display_video_func=display_video_with_mode
     )
@@ -423,9 +452,9 @@ def display_familiarization_interface(video_filename, config):
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col1:
-        if st.button("◀️ Back to Questionnaire", use_container_width=True):
+        if st.button("◀️ Back to Login Screen", use_container_width=True):
             if st.session_state.get('confirm_back_famil', False):
-                st.session_state.page = 'questionnaire'
+                st.session_state.page = 'login'
                 st.session_state.user_id_confirmed = False
                 st.session_state.familiarization_initialized = False
                 st.rerun()

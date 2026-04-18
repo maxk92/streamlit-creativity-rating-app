@@ -5,69 +5,75 @@ import streamlit as st
 import os
 from utils.navigation import get_next_page, get_prev_page
 
+_DOCS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'docs')
+
+
+@st.dialog("Participant Information and Informed Consent (English)", width="large")
+def _show_consent_en():
+    md_path = os.path.join(_DOCS_DIR, 'consent_en.md')
+    pdf_path = os.path.join(_DOCS_DIR, 'consent_en.pdf')
+    st.markdown(open(md_path).read())
+    if os.path.exists(pdf_path):
+        st.download_button(
+            label="⬇️ Download as PDF",
+            data=open(pdf_path, 'rb').read(),
+            file_name="participant_information_en.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+
+
+@st.dialog("Probandeninformation und Einwilligungserklärung (Deutsch)", width="large")
+def _show_consent_de():
+    md_path = os.path.join(_DOCS_DIR, 'consent_de.md')
+    pdf_path = os.path.join(_DOCS_DIR, 'consent_de.pdf')
+    st.markdown(open(md_path).read())
+    if os.path.exists(pdf_path):
+        st.download_button(
+            label="⬇️ Als PDF herunterladen",
+            data=open(pdf_path, 'rb').read(),
+            file_name="probandeninformation_de.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+        )
+
+
 def show():
     """Display the consent screen."""
     st.title("📋 Participant Information and Consent")
-
     st.markdown("---")
 
-    # Get consent PDF path from config
-    config = st.session_state.config
-    consent_pdf_path = config.get('paths', {}).get('consent_pdf_path', None)
+    st.markdown(
+        "Please read the participant information carefully before providing your consent. "
+        "You can open the full document in English or German below."
+    )
+    st.markdown("")
 
-    # Download button for consent PDF
-    if consent_pdf_path and os.path.exists(consent_pdf_path):
-        st.markdown("""
-        **All information about this study is contained in the participant information document.**
-
-        Please download and read the document carefully before providing your consent below.
-        """)
-
-        st.markdown("")  # Spacing
-
-        # Read PDF file and create download button
-        with open(consent_pdf_path, "rb") as pdf_file:
-            pdf_bytes = pdf_file.read()
-
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            st.download_button(
-                label="📄 View Consent Form Details",
-                data=pdf_bytes,
-                file_name="participant_information.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                type="primary"
-            )
-    else:
-        st.warning("⚠️ Participant information document is not available. Please contact the study administration.")
-        if consent_pdf_path:
-            st.info(f"Expected path: {consent_pdf_path}")
+    col1, col2, _ = st.columns([2, 2, 1])
+    with col1:
+        if st.button("📄 Read Participant Information (English)", use_container_width=True, type="primary"):
+            _show_consent_en()
+    with col2:
+        if st.button("📄 Probandeninformation lesen (Deutsch)", use_container_width=True, type="primary"):
+            _show_consent_de()
 
     st.markdown("---")
-
-    # Consent Section
     st.markdown("## Consent Declaration")
 
-    # Consent checkbox
-    consent_given = st.checkbox(
-        "**I confirm that**",
-        key="consent_checkbox"
-    )
+    consent_given = st.checkbox("**I confirm that**", key="consent_checkbox")
 
     st.markdown("""
+1. I have read and understood the participant information
+2. I consent to participate in this research study voluntarily
+3. I understand that my participation is voluntary and I may withdraw at any time without consequence
+4. I consent to the anonymous processing of my data for research purposes
+5. I understand that my data will not be shared with third parties
+6. I am at least 18 years old
+""")
 
-                1. I have read and understood the participant information above
-                2. I consent to participate in this research study voluntarily
-                3. I consent to the processing of my data anonymously for research purposes
-                4. I consent to being contacted via email for potential follow-up questions
-                5. I am at least 18 years old
-                """)
-    
     st.markdown("")
     st.markdown("")
 
-    # Navigation buttons
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col1:
@@ -81,7 +87,6 @@ def show():
                 st.error("⚠️ You must provide your consent to proceed with the study.")
                 st.stop()
             else:
-                # Store consent in session state with timestamp
                 from datetime import datetime
                 st.session_state.consent_given = True
                 st.session_state.consent_timestamp = datetime.now().isoformat(timespec='seconds')
