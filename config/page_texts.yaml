@@ -7,56 +7,74 @@ welcome:
   body: |
     ## Welcome!
 
-    Thank you for taking part in this study on **creativity in soccer**. Here is an overview of what to expect:
+    Thank you for taking part in this online study on **creativity in soccer**. You will watch short video clips of soccer actions and rate each one on several dimensions. The session takes approximately **20–30 minutes**.
 
-    ### Steps:
+    ### What to expect:
 
-    1. **Login**: Indicate whether you have participated before
-    2. **Questionnaire**: New participants complete a brief background questionnaire
-    3. **Familiarization**: Go through a few practice clips to get used to the rating interface
-    4. **Rating**: Watch short soccer action clips and rate each one on several dimensions
+    1. **Login** — Indicate whether you have participated before. If yes, enter your participant ID to resume. If no:
+    2. **Questionnaire** — New participants complete a brief background questionnaire. Afterwards a participant ID is generated for you.
+    3. **Instructions** — You will receive an explanation of the rating task, including the definition of creativity used in this study.
+    4. **Familiarization** — You will watch 3 practice clips to get familiar with the interface before the actual experiment begins.
+    5. **Rating Experiment** — Watch soccer action clips and rate each one on creativity and two additional dimensions.
 
-    ### Important Notes:
-
-    - Please complete ratings in a quiet environment without distractions
-    - All data is anonymized using a generated participant ID — no personal information is stored
-    - You can take breaks between clips; your progress is saved automatically
+    All data is anonymized using a generated participant ID — no personal information is stored. Your progress is saved automatically, so you can take breaks between clips.
 
     ---
 
     **Ready to begin?** Click the button below to proceed.
 
 pre_familiarization:
-  body: |
+  text_before_definitions: |
     ### Instructions — Please read carefully!
 
-    You will be shown a series of short video clips of soccer actions. For each clip, you will be asked to rate the action on the following dimensions:
+    #### Identifying the action
 
-    - **Creativity**: How creative was this action? (1 = not creative at all, 7 = extremely creative)
-    - **Technical Correctness**: How technically correct was the execution? (1 = not technically correct, 7 = very technically correct)
-    - **Aesthetic Appeal**: How aesthetically appealing was the action? (1 = not appealing, 7 = very appealing)
+    Each video clip shows a short soccer action. Because soccer is fast-paced, a clip may contain more than one action in quick succession. To help you identify the **specific action** you are asked to rate:
 
-    #### Tips for rating creativity:
+    - **Metadata** (team, player, action type, etc.) is displayed **above the video**.
+    - A **pitch drawing** with the ball trajectory during the action is shown alongside the video.
 
-    A soccer action can be considered creative if it is **novel, surprising, or unexpected** given the game situation — yet still **effective or intentional**. Pure technical excellence alone does not make an action creative; creativity involves an element of originality or ingenuity.
+    Please use this information to make sure you are rating the correct action. If you are **not certain** which action is meant, press **"Action not recognized"** rather than guessing. It is essential that you are confident you are rating the intended action.
 
-    You may re-watch each clip as many times as you like before submitting your ratings.
+    ---
 
-    We will now start with **3 practice clips** so you can familiarise yourself with the interface. Press **Start** below to begin the practice.
+    #### The creativity definition
+
+    The foundation for your creativity ratings is the following definition of creativity in soccer. Please read it carefully before proceeding. You can return to it at any time using the buttons below.
+
+  text_after_definitions: |
+
+    ---
+
+    #### Additional rating dimensions
+
+    In addition to creativity, you will rate each action on two further dimensions:
+
+    - **Technical Correctness** — How technically well was the action executed? This refers to the precision, control, and skill with which the action was performed, regardless of whether it was creative or not. (1 = very poor technique, 7 = perfect technique)
+
+    - **Aesthetic Appeal** — How visually appealing or pleasing was the action to watch? This is a subjective impression of elegance, style, or beauty of movement. (1 = not appealing at all, 7 = extremely appealing)
+
+    ---
+
+    We will now start with **3 practice trials** so you can familiarise yourself with the interface. Press the button below to begin.
 
 post_familiarization:
   success_message: |
     ### Well done!
 
-    You have completed the practice trials and should now be comfortable with the rating interface.
-  body: |
-    The main rating task will now begin.
+    You have completed the practice trials and are now ready for the main experiment.
+  text_before_definitions: |
+    #### Reminder before you begin
 
-    You will see a series of soccer action clips. For each clip, please rate it on **creativity**, **technical correctness**, and **aesthetic appeal** using the 1–7 scales provided.
+    Please remember: always make sure you are rating the **correct action**. Use the metadata and pitch drawing to identify it. If you are unsure, press **"Action not recognized"** rather than guessing.
 
-    Take your time, re-watch clips as needed, and try to be as accurate as possible. There are no right or wrong answers — we are interested in your personal perception.
+    The creativity definition is available below for reference:
 
-    Good luck and thank you for your contribution!
+  text_after_definitions: |
+
+    ---
+
+    The main rating experiment will now begin. Good luck and thank you for your contribution!
 
 completion:
   heading: "All Done!"
