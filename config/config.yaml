@@ -78,10 +78,10 @@ settings:
       column: "bodypart"
 
   # --- Familiarization ---
-  enable_familiarization: false  # Set to false to skip all familiarization screens
+  enable_familiarization: true  # Set to false to skip all familiarization screens
 
   # --- Video selection ---
-  number_of_videos: 40  # Maximum videos per session (null = all available)
+  number_of_videos: 60  # Maximum videos per session (null = all available)
 
   # Stratified sampling (optional — leave commented out for simple random sampling)
   #variables_for_stratification:

@@ -69,14 +69,14 @@
   type: "numeric"
   field_name: "play_exp_nonsoccer"
   title: ""
-  hint_text: "Experience as a player in other sport than soccer (years)"
+  hint_text: "Experience as a player in other sports than soccer (years)"
   required_to_proceed: true
 
 - active: true
   type: "numeric"
   field_name: "coach_exp_nonsoccer"
   title: ""
-  hint_text: "Experience as a coach in other sport than soccer (years)"
+  hint_text: "Experience as a coach in other sports than soccer (years)"
   required_to_proceed: true
 
 - active: true
