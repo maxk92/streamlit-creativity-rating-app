@@ -38,6 +38,10 @@ secrets/
 info.txt
 .streamlit/secrets.toml
 
+# UV/project files (Streamlit Community Cloud should use requirements.txt only)
+uv.lock
+pyproject.toml
+
 # Documentation
 CLAUDE.md
 UV_SETUP.md
