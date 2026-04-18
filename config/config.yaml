@@ -14,7 +14,7 @@ paths:
   # - "gdrive": Download from Google Drive (file ID set in .streamlit/secrets.toml as gdrive.metadata_file_id)
   #   metadata_path is still required in both modes to determine the file extension (.duckdb or .csv)
   metadata_source: "gdrive"
-  metadata_path: "data/statsbomb_event_data.duckdb"
+  metadata_path: "data/statsbomb_event_sample.csv"
 
   # Video source: "local" or "gdrive"
   # - "local": Load videos from local filesystem (video_path)

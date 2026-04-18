@@ -334,14 +334,6 @@ def initialize_video_player(config):
             # Detect file type and load metadata accordingly
             if not metadata_path:
                 print("[WARNING] No metadata path available, skipping metadata load")
-            elif metadata_path.endswith('.duckdb'):
-                # Load from DuckDB (lazy import to avoid binary conflicts on Streamlit Cloud)
-                import duckdb
-                conn = duckdb.connect(metadata_path, read_only=True)
-                event_id_str = ', '.join(f"'{event_id}'" for event_id in event_ids)
-                query = f"SELECT * FROM events WHERE id IN ({event_id_str})"
-                df_metadata = conn.execute(query).fetchdf()
-                conn.close()
             elif metadata_path.endswith('.csv'):
                 # Load from CSV
                 df_full = pd.read_csv(metadata_path)
