@@ -40,6 +40,16 @@ st.markdown(
         section[data-testid="stSidebar"] {
             display: none;
         }
+        /* Increase base font size by ~2pt (16px → 19px) */
+        section[data-testid="stMain"] .stMarkdown p,
+        section[data-testid="stMain"] .stMarkdown li,
+        section[data-testid="stMain"] .stMarkdown td,
+        section[data-testid="stMain"] .stMarkdown th,
+        section[data-testid="stMain"] label,
+        section[data-testid="stMain"] .stTextInput input,
+        section[data-testid="stMain"] .stNumberInput input {
+            font-size: 19px !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
