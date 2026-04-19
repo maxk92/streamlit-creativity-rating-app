@@ -283,6 +283,58 @@ def clear_video_cache():
     print("[INFO] Video cache cleared")
 
 
+def prefetch_videos(folder_id):
+    """
+    Download all videos in a folder to the local temp cache.
+    Uses its own private GDrive service so it never touches the global
+    _gdrive_service from the main thread (httplib2.Http is not thread-safe).
+    """
+    try:
+        credentials_dict = dict(st.secrets["connections"]["gsheets"])
+        credentials_dict.pop('spreadsheet', None)
+        thread_credentials = Credentials.from_service_account_info(
+            credentials_dict,
+            scopes=['https://www.googleapis.com/auth/drive.readonly']
+        )
+        thread_service = build('drive', 'v3', credentials=thread_credentials)
+
+        query = f"'{folder_id}' in parents and (mimeType contains 'video/' or name contains '.mp4')"
+        results = thread_service.files().list(
+            q=query, fields="files(id, name)", pageSize=1000
+        ).execute()
+        files = results.get('files', [])
+        print(f"[INFO] Prefetch: downloading {len(files)} videos in background")
+
+        for file_info in files:
+            file_id = file_info['id']
+            filename = file_info['name']
+            cache_key = f"{file_id}_{filename}"
+            if cache_key in _video_cache and os.path.exists(_video_cache[cache_key]):
+                print(f"[INFO] Prefetch: already cached {filename}")
+                continue
+            try:
+                request = thread_service.files().get_media(fileId=file_id)
+                suffix = Path(filename).suffix or '.mp4'
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+                temp_path = temp_file.name
+                fh = io.BytesIO()
+                downloader = MediaIoBaseDownload(fh, request)
+                done = False
+                while not done:
+                    _, done = downloader.next_chunk()
+                fh.seek(0)
+                temp_file.write(fh.read())
+                temp_file.close()
+                _video_cache[cache_key] = temp_path
+                print(f"[INFO] Prefetch: cached {filename}")
+            except Exception as e:
+                print(f"[WARNING] Prefetch: failed to download {filename}: {e}")
+
+        print("[INFO] Prefetch: all familiarization videos cached")
+    except Exception as e:
+        print(f"[WARNING] Prefetch failed: {e}")
+
+
 def get_all_video_filenames(folder_id):
     """
     Get list of all video filenames in a Google Drive folder.

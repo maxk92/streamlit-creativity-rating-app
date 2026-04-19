@@ -6,8 +6,39 @@ Step 2: Additional rating dimensions + loading note
 """
 import streamlit as st
 import os
+import threading
 
 _DOCS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'docs')
+
+
+def _start_video_prefetch():
+    """
+    Kick off a background thread to pre-download familiarization videos from
+    Google Drive so they are already cached when the user reaches the rating screen.
+    Only runs once per session and only when video_source is 'gdrive'.
+    """
+    if st.session_state.get('famil_prefetch_started'):
+        return
+
+    config = st.session_state.get('config') or {}
+    if config.get('paths', {}).get('video_source') != 'gdrive':
+        return
+
+    try:
+        folder_id = st.secrets["gdrive"]["familiarization_folder_id"]
+    except Exception:
+        return
+
+    from utils.gdrive_manager import prefetch_videos
+    thread = threading.Thread(
+        target=prefetch_videos,
+        args=(folder_id,),
+        daemon=True,
+        name="famil-video-prefetch",
+    )
+    thread.start()
+    st.session_state.famil_prefetch_started = True
+    print("[INFO] Background prefetch started for familiarization videos")
 
 
 def _nav_buttons(back_label, back_action, next_label, next_action, confirm_key=None, confirm_msg=None):
@@ -208,6 +239,8 @@ def _start_famil():
 # ---------------------------------------------------------------------------
 
 def show():
+    _start_video_prefetch()
+
     if 'pre_famil_step' not in st.session_state:
         st.session_state.pre_famil_step = 0
 
