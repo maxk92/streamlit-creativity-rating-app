@@ -3,6 +3,11 @@ Creativity Rating App - Streamlit Version
 
 Main application file with navigation and session state management.
 """
+# Force matplotlib to use the non-interactive Agg backend before any other
+# import can trigger backend auto-detection (which can segfault on headless servers).
+import matplotlib
+matplotlib.use('Agg')
+
 import streamlit as st
 
 import os
