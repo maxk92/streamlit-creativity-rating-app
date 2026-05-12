@@ -278,10 +278,18 @@ def display_video_rating_interface(
                     fig.patch.set_facecolor('black')
                     fig.patch.set_alpha(1)
 
-                    start_x = row.start_x.values[0]
-                    start_y = row.start_y.values[0]
-                    end_x = row.end_x.values[0]
-                    end_y = row.end_y.values[0]
+                    def _pick(video_col, raw_col):
+                        if video_col in row.columns:
+                            v = row[video_col].values[0]
+                            import math
+                            if v is not None and not (isinstance(v, float) and math.isnan(v)):
+                                return v
+                        return row[raw_col].values[0]
+
+                    start_x = _pick('start_x_video', 'start_x')
+                    start_y = _pick('start_y_video', 'start_y')
+                    end_x = _pick('end_x_video', 'end_x')
+                    end_y = _pick('end_y_video', 'end_y')
 
                     pitch.arrows(start_x, start_y, end_x, end_y,
                                 ax=ax, color=arrow_color, width=arrow_width,

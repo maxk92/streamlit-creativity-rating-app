@@ -19,7 +19,7 @@ paths:
   # Video source: "local" or "gdrive"
   # - "local": Load videos from local filesystem (video_path)
   # - "gdrive": Load videos from Google Drive (folder IDs configured in .streamlit/secrets.toml)
-  video_source: "gdrive"
+  video_source: "local"
 
   # Local filesystem paths (used when video_source = "local")
   # path to external drive on Linux
@@ -28,10 +28,10 @@ paths:
   # path to external drive on macOS
   #video_path: "/Volumes/Elements/videos_all"
 
-  #video_path: "data/videos/"
+  video_path: "data/video_set1/"
 
   # Familiarization videos (always the same 3 videos for all users)
-  #familiarization_video_path: "/data/videos_familiarization"
+  familiarization_video_path: "data/videos_famil/"
 
 # ============================================================
 # Settings
