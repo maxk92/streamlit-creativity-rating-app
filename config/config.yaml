@@ -78,7 +78,7 @@ settings:
       column: "bodypart"
 
   # --- Familiarization ---
-  enable_familiarization: true  # Set to false to skip all familiarization screens
+  enable_familiarization: false  # Set to false to skip all familiarization screens
 
   # --- Video selection ---
   number_of_videos: 60  # Maximum videos per session (null = all available)
