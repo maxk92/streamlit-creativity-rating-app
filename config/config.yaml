@@ -28,10 +28,10 @@ paths:
   # path to external drive on macOS
   #video_path: "/Volumes/Elements/videos_all"
 
-  video_path: "data/video_set1/"
+  video_path: "data/video-set-2/"
 
   # Familiarization videos (always the same 3 videos for all users)
-  familiarization_video_path: "data/videos_famil/"
+  familiarization_video_path: "data/videos-famil/"
 
 # ============================================================
 # Settings

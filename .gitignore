@@ -56,4 +56,5 @@ GSHEETS_ARCHITECTURE.md
 
 # Large data files — never commit the data/ directory
 data/statsbomb_event_data.duckdb
-data/video_set1-old/
+data/video-sets-old/
+data/video-sets-next-up/
