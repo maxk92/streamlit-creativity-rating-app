@@ -15,6 +15,7 @@ from utils.config_loader import load_rating_scales
 from utils.data_persistence import save_rating, get_rated_videos_for_user
 from utils.video_rating_display import display_video_rating_interface
 from utils.r2_manager import list_video_filenames, get_video_url, download_file_to_temp
+from utils.metadata_loader import load_metadata
 
 def stratified_sample_videos(videos_to_rate, df_metadata, number_of_videos, strat_config):
     """
@@ -317,19 +318,8 @@ def initialize_video_player(config):
         print(f"[WARNING] Error filtering fully-rated videos: {e}")
         videos_to_rate = unrated_videos
 
-    # Load metadata (independent of videos_to_rate so it's always available)
-    df_metadata = pd.DataFrame()
-    try:
-        if not metadata_path:
-            print("[WARNING] No metadata path available, skipping metadata load")
-        elif metadata_path.endswith('.csv'):
-            df_metadata = pd.read_csv(metadata_path)
-            print(f"[INFO] Loaded {len(df_metadata)} metadata rows from CSV")
-        else:
-            print(f"[WARNING] Unsupported metadata file type: {metadata_path}")
-    except Exception as e:
-        print(f"[WARNING] Failed to load metadata: {e}")
-        df_metadata = pd.DataFrame()
+    # Load metadata for all available videos (independent of videos_to_rate so it's always available)
+    df_metadata = load_metadata(metadata_path, [os.path.splitext(v)[0] for v in all_videos])
 
     # Apply stratified sampling or simple random sampling
     number_of_videos = config['settings'].get('number_of_videos', None)

@@ -13,6 +13,7 @@ import html
 from utils.config_loader import load_rating_scales
 from utils.video_rating_display import display_video_rating_interface
 from utils.r2_manager import list_video_filenames, get_video_url, download_file_to_temp
+from utils.metadata_loader import load_metadata
 
 def display_video_with_mode(video_src, playback_mode='loop'):
     """
@@ -275,17 +276,11 @@ def initialize_familiarization(config):
     # Load metadata (same logic as initialize_video_player)
     metadata_path = config['paths'].get('metadata_path', '')
     metadata_source = config['paths'].get('metadata_source', 'local')
-    df_metadata = pd.DataFrame()
     if metadata_source == 'r2':
         metadata_path = download_file_to_temp(config['paths'].get('r2_metadata_key', ''))
         if not metadata_path:
             print("[WARNING] Failed to download metadata for familiarization from R2")
-    if metadata_path:
-        try:
-            if metadata_path.endswith('.csv'):
-                df_metadata = pd.read_csv(metadata_path)
-        except Exception as e:
-            print(f"[WARNING] Failed to load metadata for familiarization: {e}")
+    df_metadata = load_metadata(metadata_path, [os.path.splitext(v)[0] for v in all_videos])
 
     # Store in session state
     st.session_state.familiarization_videos = all_videos

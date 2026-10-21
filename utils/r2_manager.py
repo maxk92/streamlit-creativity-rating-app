@@ -104,8 +104,9 @@ def get_video_url(prefix, filename):
     return url
 
 
-@st.cache_data(ttl=3600, show_spinner=False)
+@st.cache_data(show_spinner=False)
 def _download_file_cached(key):
+    # Cached until the app restarts (metadata files can be large).
     # Raises on failure so that failed downloads are not cached
     temp_dir = os.path.join(tempfile.gettempdir(), "r2_cache")
     os.makedirs(temp_dir, exist_ok=True)
