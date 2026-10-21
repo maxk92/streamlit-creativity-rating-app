@@ -95,6 +95,7 @@ To deploy this app online:
    - Push to GitHub
    - Connect at share.streamlit.io
    - Configure secrets for sensitive paths
+   - Host the videos in a Cloudflare R2 bucket (`video_source: "r2"`) instead of committing them; see "Hosting videos on Cloudflare R2" in README.md
 
 2. **Docker**:
    - Create a Dockerfile

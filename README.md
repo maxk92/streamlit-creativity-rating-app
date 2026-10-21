@@ -28,12 +28,16 @@ app:
   icon: ""                 # emoji or leave empty
 
 paths:
-  metadata_path: "data/events.duckdb"   # DuckDB (.duckdb) or CSV (.csv)
+  metadata_source: "local"              # "local" or "r2"
+  metadata_path: "data/events.csv"      # used when metadata_source = "local"
+  r2_metadata_key: "metadata/events.csv" # used when metadata_source = "r2"
 
-  # Video source: "local" or "gdrive"
+  # Video source: "local" or "r2" (Cloudflare R2 bucket)
   video_source: "local"
   video_path: "data/videos/"            # used when video_source = "local"
   familiarization_video_path: "data/videos_familiarization/"
+  r2_video_prefix: "videos/"            # used when video_source = "r2"
+  r2_familiarization_prefix: "videos_familiarization/"
 
 settings:
   min_ratings_per_video: 2   # stop showing a video once it has this many ratings
@@ -91,12 +95,40 @@ settings:
 
   # --- Storage ---
   # "local"  — JSON files in user_data/ and user_ratings/
-  # "online" — Google Sheets + Google Drive (requires secrets.toml)
-  # "both"   — write to all locations
+  # "online" — Google Sheets (requires secrets.toml)
+  # "both"   — Google Sheets + local JSON
   storage_mode: "local"
 ```
 
-**Google Drive / Sheets** (when `video_source: "gdrive"` or `storage_mode: "online"`): add credentials to `.streamlit/secrets.toml`. See [Streamlit secrets docs](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management).
+**Google Sheets** (when `storage_mode: "online"` or `"both"`): add credentials to `.streamlit/secrets.toml`. See [Streamlit secrets docs](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management).
+
+#### Hosting videos on Cloudflare R2
+
+For online deployments, keep videos out of the git repository and serve them from a [Cloudflare R2](https://developers.cloudflare.com/r2/) bucket (S3-compatible, 10 GB free, no egress fees). The bucket stays private: the app lists the videos and hands each participant's browser a short-lived presigned URL, so videos stream directly from R2 and never pass through the Streamlit server.
+
+1. In the Cloudflare dashboard go to **R2 → Create bucket** (e.g. `creativity-videos`). Leave public access disabled.
+2. Go to **R2 → Manage API tokens → Create API token** with *Object Read & Write* permission, limited to that bucket. Note the Access Key ID, Secret Access Key and your Account ID.
+3. Add the credentials to `.streamlit/secrets.toml` (and to the app's secrets on Streamlit Community Cloud):
+
+   ```toml
+   [r2]
+   account_id = "..."
+   access_key_id = "..."
+   secret_access_key = "..."
+   bucket = "creativity-videos"
+   ```
+
+4. Upload the videos (already-uploaded files are skipped on re-runs):
+
+   ```bash
+   python utils/upload_to_r2.py data/videos videos/
+   python utils/upload_to_r2.py data/videos_familiarization videos_familiarization/
+   python utils/upload_to_r2.py data/events.csv metadata/   # optional, for metadata_source: "r2"
+   ```
+
+   Alternatively upload via the Cloudflare dashboard or `rclone`.
+
+5. Set `video_source: "r2"` (and optionally `metadata_source: "r2"`) in `config/config.yaml`, with the prefixes matching the upload.
 
 ---
 

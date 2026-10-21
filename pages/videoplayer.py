@@ -8,12 +8,13 @@ import os
 import pandas as pd
 import random
 import base64
+import html
 from io import BytesIO
 
 from utils.config_loader import load_rating_scales
 from utils.data_persistence import save_rating, get_rated_videos_for_user
 from utils.video_rating_display import display_video_rating_interface
-from utils.gdrive_manager import get_all_video_filenames, get_video_path, download_file_to_temp
+from utils.r2_manager import list_video_filenames, get_video_url, download_file_to_temp
 
 def stratified_sample_videos(videos_to_rate, df_metadata, number_of_videos, strat_config):
     """
@@ -144,33 +145,35 @@ def _stratified_sample_recursive(df, strat_config, target_count, level):
 
     return selected_ids
 
-def display_video_with_mode(video_file_path, playback_mode='loop'):
+def display_video_with_mode(video_src, playback_mode='loop'):
     """
     Display video with specified playback mode.
-    Handles both local and Google Drive video sources.
+    Handles both local and R2 video sources.
 
     Parameters:
-    - video_file_path: Path to the video file (local or from Google Drive cache)
+    - video_src: Local file path or URL (presigned R2 URL) of the video
     - playback_mode: 'loop' or 'once'
         - 'loop': Autoplay, loop enabled, controls visible
         - 'once': Autoplay, no loop, no controls (plays once only)
     """
-    # For Google Drive videos, video_file_path will be a temp path that already exists
-    # For local videos, check if file exists
-    if not os.path.exists(video_file_path):
-        st.error(f"Video file not found: {video_file_path}")
+    is_url = video_src.startswith(('http://', 'https://'))
+    if not is_url and not os.path.exists(video_src):
+        st.error(f"Video file not found: {video_src}")
         return
 
     if playback_mode == 'loop':
         # Loop mode: autoplay with controls and looping
-        st.video(video_file_path, autoplay=True, loop=True)
+        st.video(video_src, autoplay=True, loop=True)
 
     elif playback_mode == 'once':
         # Once mode: autoplay without controls, no loop, plays once only
-        # Read video file and encode as base64
-        with open(video_file_path, 'rb') as f:
-            video_bytes = f.read()
-        video_base64 = base64.b64encode(video_bytes).decode()
+        # URLs are streamed directly; local files are embedded as base64
+        if is_url:
+            source_src = html.escape(video_src)
+        else:
+            with open(video_src, 'rb') as f:
+                video_bytes = f.read()
+            source_src = f"data:video/mp4;base64,{base64.b64encode(video_bytes).decode()}"
 
         # Create HTML5 video player without controls
         # Use object-fit: contain to ensure video is never cropped
@@ -182,7 +185,7 @@ def display_video_with_mode(video_file_path, playback_mode='loop'):
                 style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;"
                 onended="this.pause();"
             >
-                <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+                <source src="{source_src}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -201,7 +204,7 @@ def display_video_with_mode(video_file_path, playback_mode='loop'):
 
     else:
         # Fallback to default
-        st.video(video_file_path)
+        st.video(video_src)
 
 def show():
     """Display the video player screen."""
@@ -268,35 +271,25 @@ def initialize_video_player(config):
     video_source = config['paths'].get('video_source', 'local')
     min_ratings_per_video = config['settings']['min_ratings_per_video']
 
-    # Download metadata from Google Drive if configured
-    if metadata_source == 'gdrive' and metadata_path:
-        try:
-            filename = os.path.basename(metadata_path)
-            file_id = st.secrets["gdrive"]["metadata_file_id"]
-            temp_path = download_file_to_temp(file_id, filename)
-            if temp_path:
-                metadata_path = temp_path
-                print(f"[INFO] Metadata downloaded from Google Drive: {filename}")
-            else:
-                print("[ERROR] Failed to download metadata from Google Drive")
-                metadata_path = None
-        except Exception as e:
-            print(f"[ERROR] Failed to get metadata from Google Drive: {e}")
-            metadata_path = None
+    # Download metadata from R2 if configured
+    if metadata_source == 'r2':
+        metadata_path = download_file_to_temp(config['paths'].get('r2_metadata_key', ''))
+        if not metadata_path:
+            print("[ERROR] Failed to download metadata from R2")
 
     # Get all video files based on source
-    if video_source == 'gdrive':
-        # Get videos from Google Drive
+    if video_source == 'r2':
+        # Get videos from Cloudflare R2
         try:
-            folder_id = st.secrets["gdrive"]["video_folder_id"]
-            all_videos = get_all_video_filenames(folder_id)
-            print(f"[INFO] Loaded {len(all_videos)} videos from Google Drive")
-            # Store folder_id for later use
-            st.session_state.gdrive_folder_id = folder_id
-            st.session_state.video_source = 'gdrive'
+            prefix = config['paths'].get('r2_video_prefix', '')
+            all_videos = list_video_filenames(prefix)
+            print(f"[INFO] Loaded {len(all_videos)} videos from R2")
+            # Store prefix for later use
+            st.session_state.r2_video_prefix = prefix
+            st.session_state.video_source = 'r2'
         except Exception as e:
-            st.error(f"Failed to load videos from Google Drive: {e}")
-            print(f"[ERROR] Google Drive error: {e}")
+            st.error(f"Failed to load videos from R2: {e}")
+            print(f"[ERROR] R2 error: {e}")
             all_videos = []
     else:
         # Get videos from local filesystem
@@ -360,27 +353,26 @@ def initialize_video_player(config):
     # Store in session state
     st.session_state.videos_to_rate = videos_to_rate
     st.session_state.current_video_index = 0
-    # Note: video_path or gdrive_folder_id already set above based on video_source
+    # Note: video_path or r2_video_prefix already set above based on video_source
 
     st.session_state.metadata = df_metadata
     st.session_state.video_initialized = True
 
-def _resolve_video_path(video_filename):
+def _resolve_video_src(video_filename):
     """
-    Resolve the video directory path and normalized filename based on video source.
+    Resolve the playable video source (local path or presigned URL) based on video source.
 
     Returns:
-        (video_path, video_filename) tuple, or (None, None) if the video cannot be loaded.
-        For Google Drive sources, shows an error + skip button and returns (None, None).
+        Local file path or URL, or None if the video cannot be loaded.
+        For R2 sources, shows an error + skip button and returns None.
     """
     video_source = st.session_state.get('video_source', 'local')
 
-    if video_source == 'gdrive':
-        folder_id = st.session_state.gdrive_folder_id
-        video_file_path = get_video_path(video_filename, folder_id)
+    if video_source == 'r2':
+        video_url = get_video_url(st.session_state.r2_video_prefix, video_filename)
 
-        if not video_file_path:
-            st.error(f"⚠️ Failed to load video from Google Drive: {video_filename}")
+        if not video_url:
+            st.error(f"⚠️ Failed to load video from R2: {video_filename}")
             st.warning("This video could not be loaded due to a network error. You can skip this video and continue.")
             col1, col2, col3 = st.columns([1, 1, 1])
             with col2:
@@ -388,12 +380,12 @@ def _resolve_video_path(video_filename):
                     st.session_state.current_video_index = st.session_state.get('current_video_index', 0) + 1
                     st.session_state.current_screen = 'video'
                     st.rerun()
-            return None, None
+            return None
 
-        return os.path.dirname(video_file_path), os.path.basename(video_file_path)
+        return video_url
 
     else:
-        return st.session_state.video_path, video_filename
+        return os.path.join(st.session_state.video_path, video_filename)
 
 
 def display_video_screen(action_id, video_filename, config):
@@ -404,13 +396,13 @@ def display_video_screen(action_id, video_filename, config):
 
     st.info(f"**Video {current_index + 1} of {total}** — Watch carefully before rating.")
 
-    video_path, resolved_filename = _resolve_video_path(video_filename)
-    if video_path is None:
+    video_src = _resolve_video_src(video_filename)
+    if video_src is None:
         return
 
     display_video_rating_interface(
-        video_filename=resolved_filename,
-        video_path=video_path,
+        video_filename=video_filename,
+        video_src=video_src,
         config=config,
         rating_scales=[],
         key_prefix="scale_",
@@ -439,7 +431,7 @@ def display_rating_screen(action_id, video_filename, config):
 
     scale_values = display_video_rating_interface(
         video_filename=video_filename,
-        video_path="",  # not used in rating_only mode
+        video_src="",  # not used in rating_only mode
         config=config,
         rating_scales=rating_scales,
         key_prefix="scale_",
@@ -494,14 +486,14 @@ def display_rating_interface(action_id, video_filename, config):
     metadata = st.session_state.metadata
     rating_scales = st.session_state.rating_scales
 
-    video_path, video_filename = _resolve_video_path(video_filename)
-    if video_path is None:
+    video_src = _resolve_video_src(video_filename)
+    if video_src is None:
         return {}
 
     # Use shared display function
     scale_values = display_video_rating_interface(
         video_filename=video_filename,
-        video_path=video_path,
+        video_src=video_src,
         config=config,
         rating_scales=rating_scales,
         key_prefix="scale_",

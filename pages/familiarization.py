@@ -8,35 +8,40 @@ import streamlit.components.v1 as components
 import os
 import pandas as pd
 import base64
+import html
 
 from utils.config_loader import load_rating_scales
 from utils.video_rating_display import display_video_rating_interface
-from utils.gdrive_manager import get_all_video_filenames, get_video_path
+from utils.r2_manager import list_video_filenames, get_video_url, download_file_to_temp
 
-def display_video_with_mode(video_file_path, playback_mode='loop'):
+def display_video_with_mode(video_src, playback_mode='loop'):
     """
     Display video with specified playback mode.
 
     Parameters:
-    - video_file_path: Path to the video file
+    - video_src: Local file path or URL (presigned R2 URL) of the video
     - playback_mode: 'loop' or 'once'
         - 'loop': Autoplay, loop enabled, controls visible
         - 'once': Autoplay, no loop, no controls (plays once only)
     """
-    if not os.path.exists(video_file_path):
-        st.error(f"Video file not found: {video_file_path}")
+    is_url = video_src.startswith(('http://', 'https://'))
+    if not is_url and not os.path.exists(video_src):
+        st.error(f"Video file not found: {video_src}")
         return
 
     if playback_mode == 'loop':
         # Loop mode: autoplay with controls and looping
-        st.video(video_file_path, autoplay=True, loop=True)
+        st.video(video_src, autoplay=True, loop=True)
 
     elif playback_mode == 'once':
         # Once mode: autoplay without controls, no loop, plays once only
-        # Read video file and encode as base64
-        with open(video_file_path, 'rb') as f:
-            video_bytes = f.read()
-        video_base64 = base64.b64encode(video_bytes).decode()
+        # URLs are streamed directly; local files are embedded as base64
+        if is_url:
+            source_src = html.escape(video_src)
+        else:
+            with open(video_src, 'rb') as f:
+                video_bytes = f.read()
+            source_src = f"data:video/mp4;base64,{base64.b64encode(video_bytes).decode()}"
 
         # Create HTML5 video player without controls
         # Use object-fit: contain to ensure video is never cropped
@@ -48,7 +53,7 @@ def display_video_with_mode(video_file_path, playback_mode='loop'):
                 style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;"
                 onended="this.pause();"
             >
-                <source src="data:video/mp4;base64,{video_base64}" type="video/mp4">
+                <source src="{source_src}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
@@ -67,7 +72,7 @@ def display_video_with_mode(video_file_path, playback_mode='loop'):
 
     else:
         # Fallback to default
-        st.video(video_file_path)
+        st.video(video_src)
 
 def _validate_familiarization_ratings(scale_values):
     """
@@ -232,20 +237,20 @@ def initialize_familiarization(config):
     video_source = config['paths'].get('video_source', 'local')
 
     # Get all video files based on source
-    if video_source == 'gdrive':
-        # Get videos from Google Drive
+    if video_source == 'r2':
+        # Get videos from Cloudflare R2
         try:
-            folder_id = st.secrets["gdrive"]["familiarization_folder_id"]
-            all_videos = get_all_video_filenames(folder_id)
+            prefix = config['paths'].get('r2_familiarization_prefix', '')
+            all_videos = list_video_filenames(prefix)
             # Sort to ensure consistent order for all users
-            all_videos.sort()
-            print(f"[INFO] Found {len(all_videos)} familiarization videos from Google Drive")
-            # Store folder_id for later use
-            st.session_state.familiarization_gdrive_folder_id = folder_id
-            st.session_state.familiarization_video_source = 'gdrive'
+            all_videos = sorted(all_videos)
+            print(f"[INFO] Found {len(all_videos)} familiarization videos from R2")
+            # Store prefix for later use
+            st.session_state.familiarization_r2_prefix = prefix
+            st.session_state.familiarization_video_source = 'r2'
         except Exception as e:
-            st.error(f"Failed to load familiarization videos from Google Drive: {e}")
-            print(f"[ERROR] Google Drive error: {e}")
+            st.error(f"Failed to load familiarization videos from R2: {e}")
+            print(f"[ERROR] R2 error: {e}")
             all_videos = []
     else:
         # Get videos from local filesystem
@@ -271,17 +276,10 @@ def initialize_familiarization(config):
     metadata_path = config['paths'].get('metadata_path', '')
     metadata_source = config['paths'].get('metadata_source', 'local')
     df_metadata = pd.DataFrame()
-    if metadata_source == 'gdrive' and metadata_path:
-        try:
-            from utils.gdrive_manager import download_file_to_temp
-            filename = os.path.basename(metadata_path)
-            file_id = st.secrets["gdrive"]["metadata_file_id"]
-            temp_path = download_file_to_temp(file_id, filename)
-            if temp_path:
-                metadata_path = temp_path
-        except Exception as e:
-            print(f"[WARNING] Failed to download metadata for familiarization: {e}")
-            metadata_path = None
+    if metadata_source == 'r2':
+        metadata_path = download_file_to_temp(config['paths'].get('r2_metadata_key', ''))
+        if not metadata_path:
+            print("[WARNING] Failed to download metadata for familiarization from R2")
     if metadata_path:
         try:
             if metadata_path.endswith('.csv'):
@@ -295,21 +293,20 @@ def initialize_familiarization(config):
     st.session_state.familiarization_metadata = df_metadata
     st.session_state.familiarization_initialized = True
 
-def _resolve_famil_video_path(video_filename):
+def _resolve_famil_video_src(video_filename):
     """
-    Resolve the familiarization video directory and normalized filename.
+    Resolve the playable familiarization video source (local path or presigned URL).
 
     Returns:
-        (video_path, video_filename) tuple, or (None, None) if the video cannot be loaded.
+        Local file path or URL, or None if the video cannot be loaded.
     """
     video_source = st.session_state.get('familiarization_video_source', 'local')
 
-    if video_source == 'gdrive':
-        folder_id = st.session_state.familiarization_gdrive_folder_id
-        video_file_path = get_video_path(video_filename, folder_id)
+    if video_source == 'r2':
+        video_url = get_video_url(st.session_state.familiarization_r2_prefix, video_filename)
 
-        if not video_file_path:
-            st.error(f"⚠️ Failed to load familiarization video from Google Drive: {video_filename}")
+        if not video_url:
+            st.error(f"⚠️ Failed to load familiarization video from R2: {video_filename}")
             st.warning("This video could not be loaded due to a network error. You can skip this video and continue.")
             col1, col2, col3 = st.columns([1, 1, 1])
             with col2:
@@ -317,12 +314,12 @@ def _resolve_famil_video_path(video_filename):
                     st.session_state.familiarization_video_index = st.session_state.get('familiarization_video_index', 0) + 1
                     st.session_state.current_famil_screen = 'video'
                     st.rerun()
-            return None, None
+            return None
 
-        return os.path.dirname(video_file_path), os.path.basename(video_file_path)
+        return video_url
 
     else:
-        return st.session_state.familiarization_path, video_filename
+        return os.path.join(st.session_state.familiarization_path, video_filename)
 
 
 def display_famil_video_screen(video_filename, config):
@@ -334,13 +331,13 @@ def display_famil_video_screen(video_filename, config):
 
     st.info(f"🎯 **Familiarization Trial — Video {current_index + 1} of {total_videos}**. These ratings will not be saved.")
 
-    video_path, resolved_filename = _resolve_famil_video_path(video_filename)
-    if video_path is None:
+    video_src = _resolve_famil_video_src(video_filename)
+    if video_src is None:
         return
 
     display_video_rating_interface(
-        video_filename=resolved_filename,
-        video_path=video_path,
+        video_filename=video_filename,
+        video_src=video_src,
         config=config,
         rating_scales=[],
         key_prefix="famil_scale_",
@@ -370,7 +367,7 @@ def display_famil_rating_screen(video_filename, config):
 
     scale_values = display_video_rating_interface(
         video_filename=video_filename,
-        video_path="",  # not used in rating_only mode
+        video_src="",  # not used in rating_only mode
         config=config,
         rating_scales=rating_scales,
         key_prefix="famil_scale_",
@@ -417,8 +414,8 @@ def display_familiarization_interface(video_filename, config):
     action_id = os.path.splitext(video_filename)[0]
     metadata = st.session_state.get('familiarization_metadata', pd.DataFrame())
 
-    video_path, video_filename = _resolve_famil_video_path(video_filename)
-    if video_path is None:
+    video_src = _resolve_famil_video_src(video_filename)
+    if video_src is None:
         return {}
 
     # Define header content as a function
@@ -430,7 +427,7 @@ def display_familiarization_interface(video_filename, config):
     # Use shared display function
     scale_values = display_video_rating_interface(
         video_filename=video_filename,
-        video_path=video_path,
+        video_src=video_src,
         config=config,
         rating_scales=rating_scales,
         key_prefix="famil_scale_",

@@ -9,17 +9,22 @@ app:
 # Paths
 # ============================================================
 paths:
-  # Metadata source: "local" or "gdrive"
+  # Metadata source: "local" or "r2"
   # - "local": Load from metadata_path on the local filesystem
-  # - "gdrive": Download from Google Drive (file ID set in .streamlit/secrets.toml as gdrive.metadata_file_id)
-  #   metadata_path is still required in both modes to determine the file extension (.duckdb or .csv)
+  # - "r2": Download r2_metadata_key from the Cloudflare R2 bucket (credentials in .streamlit/secrets.toml under [r2])
   metadata_source: "local"
   metadata_path: "data/statsbomb_event_sample.csv"
+  r2_metadata_key: "metadata/statsbomb_event_sample.csv"
 
-  # Video source: "local" or "gdrive"
+  # Video source: "local" or "r2"
   # - "local": Load videos from local filesystem (video_path)
-  # - "gdrive": Load videos from Google Drive (folder IDs configured in .streamlit/secrets.toml)
-  video_source: "local"
+  # - "r2": Stream videos from the Cloudflare R2 bucket via presigned URLs
+  #   (credentials in .streamlit/secrets.toml under [r2])
+  video_source: "r2"
+
+  # R2 key prefixes ("folders" in the bucket; used when video_source = "r2")
+  r2_video_prefix: "videos/"
+  r2_familiarization_prefix: "videos-famil/"
 
   # Local filesystem paths (used when video_source = "local")
   # path to external drive on Linux
@@ -100,6 +105,6 @@ settings:
 
   # --- Storage ---
   # "local"  - JSON files only (for development)
-  # "online" - Google Sheets + Google Drive JSON (for production)
-  # "both"   - All three (maximum redundancy)
+  # "online" - Google Sheets (for production)
+  # "both"   - Google Sheets + local JSON (maximum redundancy)
   storage_mode: "online"  # use "online" or "both" for production deployment

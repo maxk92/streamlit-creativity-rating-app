@@ -3,7 +3,6 @@ Shared display logic for video rating interface.
 Used by both main videoplayer and familiarization screens.
 """
 import streamlit as st
-import os
 import matplotlib.pyplot as plt
 
 
@@ -86,7 +85,7 @@ def _show_metadata_bar(config, action_id, metadata):
 # Public functions for separate display mode
 # ---------------------------------------------------------------------------
 
-def display_video_only(video_filename, video_path, config, display_video_func, action_id, metadata):
+def display_video_only(video_filename, video_src, config, display_video_func, action_id, metadata):
     """
     Show the metadata bar and video only — no pitch, no scales.
     Used by the video screen in 'separate' display mode.
@@ -96,11 +95,10 @@ def display_video_only(video_filename, video_path, config, display_video_func, a
 
     _show_metadata_bar(config, action_id, metadata)
 
-    video_file = os.path.join(video_path, video_filename)
     if display_video_func:
-        display_video_func(video_file, video_playback_mode)
+        display_video_func(video_src, video_playback_mode)
     else:
-        st.video(video_file, autoplay=True, loop=(video_playback_mode == 'loop'))
+        st.video(video_src, autoplay=True, loop=(video_playback_mode == 'loop'))
 
 
 def display_rating_scales_only(video_filename, rating_scales, key_prefix, action_id, config):
@@ -181,7 +179,7 @@ def display_rating_scales_only(video_filename, rating_scales, key_prefix, action
 
 def display_video_rating_interface(
     video_filename,
-    video_path,
+    video_src,
     config,
     rating_scales,
     key_prefix,
@@ -196,14 +194,14 @@ def display_video_rating_interface(
 
     Parameters:
     - video_filename: Name of the video file to display
-    - video_path: Path to the directory containing the video
+    - video_src: Local file path or URL of the video (unused in 'rating_only' mode)
     - config: Configuration dictionary
     - rating_scales: List of rating scale configurations
     - key_prefix: Prefix for Streamlit widget keys (e.g., 'scale_' or 'famil_scale_')
     - action_id: Optional action ID for metadata lookup
     - metadata: Optional metadata DataFrame
     - header_content: Optional callable to display at the top
-    - display_video_func: Function to display video (accepts file_path, playback_mode)
+    - display_video_func: Function to display video (accepts video_src, playback_mode)
     - display_mode: 'combined' (default), 'video_only', or 'rating_only'
 
     Returns:
@@ -215,7 +213,7 @@ def display_video_rating_interface(
 
     # --- Delegate to sub-functions for separate mode ---
     if display_mode == 'video_only':
-        display_video_only(video_filename, video_path, config, display_video_func, action_id, metadata)
+        display_video_only(video_filename, video_src, config, display_video_func, action_id, metadata)
         return {}
 
     if display_mode == 'rating_only':
@@ -261,11 +259,10 @@ def display_video_rating_interface(
         col_video, col_pitch = st.columns(col_ratio)
 
         with col_video:
-            video_file = os.path.join(video_path, video_filename)
             if display_video_func:
-                display_video_func(video_file, video_playback_mode)
+                display_video_func(video_src, video_playback_mode)
             else:
-                st.video(video_file, autoplay=True, loop=(video_playback_mode == 'loop'))
+                st.video(video_src, autoplay=True, loop=(video_playback_mode == 'loop'))
 
         with col_pitch:
             row = metadata[metadata['id'] == action_id]
@@ -307,11 +304,10 @@ def display_video_rating_interface(
                 st.info("No metadata available for this video")
 
     else:
-        video_file = os.path.join(video_path, video_filename)
         if display_video_func:
-            display_video_func(video_file, video_playback_mode)
+            display_video_func(video_src, video_playback_mode)
         else:
-            st.video(video_file, autoplay=True, loop=(video_playback_mode == 'loop'))
+            st.video(video_src, autoplay=True, loop=(video_playback_mode == 'loop'))
 
     # Action not recognized button
     show_not_recognized = settings.get('show_action_not_recognized', True)
