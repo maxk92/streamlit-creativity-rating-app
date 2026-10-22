@@ -42,7 +42,7 @@ paths:
 # Settings
 # ============================================================
 settings:
-  min_ratings_per_video: 5
+  min_ratings_per_video: 10
   questionnaire_fields_file: "config/questionnaire_fields.yaml"
   rating_scales_file: "config/rating_scales.yaml"
   page_texts_file: "config/page_texts.yaml"
@@ -86,7 +86,7 @@ settings:
   enable_familiarization: true  # Set to false to skip all familiarization screens
 
   # --- Video selection ---
-  number_of_videos: 60  # Maximum videos per session (null = all available)
+  number_of_videos: 100  # Maximum videos per session (null = all available)
 
   # Stratified sampling (optional — leave commented out for simple random sampling)
   #variables_for_stratification:
