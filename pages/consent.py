@@ -45,7 +45,9 @@ def show():
 
     st.markdown(
         "Please read the participant information carefully before providing your consent. "
-        "You can open the full document in English or German below."
+        "You can open the full document in English or German below. "
+        "Please note that the anonymised rating and background data of this study "
+        "is intended to be published as an open dataset."
     )
     st.markdown("")
 
@@ -66,9 +68,10 @@ def show():
 1. I have read and understood the participant information
 2. I consent to participate in this research study voluntarily
 3. I understand that my participation is voluntary and I may withdraw at any time without consequence
-4. I consent to the anonymous processing of my data for research purposes
-5. I understand that my data will not be shared with third parties
-6. I am at least 18 years old
+4. I consent to the processing of my data for research purposes
+5. I consent to my ratings and background information being published as an anonymised open dataset
+6. I understand that my name and e-mail address will never be published and will not be shared with third parties
+7. I am at least 18 years old
 """)
 
     st.markdown("")

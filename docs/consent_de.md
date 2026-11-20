@@ -22,16 +22,22 @@ Wir erheben folgende Daten: Ihre Bewertungsantworten (numerische Einschätzungen
 
 Die Verarbeitung Ihrer personenbezogenen Daten im Rahmen dieses Forschungsprojekts ist nur mit Ihrer ausdrücklichen und freiwilligen Einwilligung möglich.
 
-Mit Ihrer Zustimmung erklären Sie sich ausdrücklich damit einverstanden, dass die Deutsche Sporthochschule Köln folgende personenbezogene Daten für Zwecke des Forschungsprojekts erhebt, speichert und verarbeitet: Alter, Geschlecht und Hintergrundinformationen.
+Mit Ihrer Zustimmung erklären Sie sich ausdrücklich damit einverstanden, dass die Deutsche Sporthochschule Köln folgende Daten für Zwecke des Forschungsprojekts erhebt, speichert und verarbeitet:
 
-- Ihre Daten werden ausschließlich **anonymisiert** zu Forschungszwecken verarbeitet
-- Alle Antworten werden lediglich einer anonymen Teilnehmer-ID zugeordnet — in Veröffentlichungen sind keine Rückschlüsse auf Ihre Person möglich
-- Ihre Daten werden ausschließlich für akademische Forschung und wissenschaftliche Publikationen verwendet
-- Ihre Daten werden **nicht an Dritte** außerhalb des Forschungsteams weitergegeben
-- Ihre Daten werden sicher gespeichert; der Zugang ist auf autorisierte Forschende beschränkt
+- **Kontaktdaten:** Ihr Name und Ihre E-Mail-Adresse
+- **Hintergrundinformationen:** Alter, Geschlecht, Nationalität, das Land, in dem Sie überwiegend gelebt haben, Ihre Erfahrung (in Jahren) als Fußballspieler:in, Fußballtrainer:in und Fußballzuschauer:in, Ihre Erfahrung als Spieler:in und Trainer:in in anderen Sportarten sowie Ihre Fußball-Trainerlizenz
+- **Bewertungsdaten:** Ihre Bewertungen der Videoclips
+
+Ihre Bewertungen und Hintergrundinformationen werden unter einer **zufällig generierten Teilnehmer-ID** gespeichert, die keine personenbezogenen Informationen enthält. Ihr Name und Ihre E-Mail-Adresse werden ausschließlich für die Durchführung der Studie verwendet (z. B. zur Beantwortung von Fragen zu Ihrer Teilnahme). Sie werden **niemals veröffentlicht**, **nicht an Dritte weitergegeben** und nach Abschluss der Studie gelöscht.
+
+**Veröffentlichung als offener Datensatz:** Wir beabsichtigen, die Bewertungsdaten zusammen mit den Hintergrundinformationen (Alter, Geschlecht, Nationalität, Herkunftsland, Fußball- und Sporterfahrung, Trainerlizenz) als **offenen Datensatz** (Open Data) in einem öffentlichen Forschungsdatenrepositorium zu veröffentlichen, damit andere Forschende unsere Ergebnisse überprüfen und darauf aufbauen können. Vor der Veröffentlichung werden alle direkt identifizierenden Angaben (Name, E-Mail-Adresse, Teilnehmer-ID) entfernt. Sofern eine Kombination von Hintergrundmerkmalen eine Identifizierung einzelner Personen ermöglichen könnte, werden diese Merkmale vergröbert (z. B. Angabe des Alters in Altersgruppen) oder entfernt, sodass keine Rückschlüsse auf Ihre Person möglich sind.
+
+- Ihre Daten werden in **anonymisierter Form** zu Forschungszwecken verarbeitet
+- Wissenschaftliche Veröffentlichungen und der offene Datensatz enthalten **keine personenbezogenen Informationen**
+- Ihre Kontaktdaten werden sicher gespeichert; der Zugang ist auf autorisierte Forschende beschränkt
 - Die Datenverwendung erfolgt strikt gemäß den gesetzlichen Vorschriften (DSGVO)
 
-Sie können Ihre Einwilligung **jederzeit mit Wirkung für die Zukunft widerrufen**, ohne dass Ihnen daraus Nachteile entstehen. In diesem Fall werden Ihre personenbezogenen Daten unverzüglich gelöscht. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt unberührt.
+Sie können Ihre Einwilligung **jederzeit mit Wirkung für die Zukunft widerrufen**, ohne dass Ihnen daraus Nachteile entstehen. In diesem Fall werden Ihre personenbezogenen Daten unverzüglich gelöscht. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt unberührt. Bitte beachten Sie, dass bereits in anonymisierter Form veröffentlichte Daten nicht mehr zurückgezogen werden können, da sie Ihnen nicht mehr zugeordnet werden können.
 
 ---
 
@@ -65,6 +71,7 @@ Mit dem Setzen des Häkchens und dem Klick auf „Ich stimme zu" bestätigen Sie
 1. Sie haben die obenstehenden Probandeninformationen gelesen und verstanden
 2. Sie stimmen der freiwilligen Teilnahme an dieser Studie zu
 3. Sie verstehen, dass Ihre Teilnahme freiwillig ist und Sie jederzeit ohne Konsequenzen abbrechen können
-4. Sie stimmen der anonymisierten Verarbeitung Ihrer Daten zu Forschungszwecken zu
-5. Sie verstehen, dass Ihre Daten nicht an Dritte weitergegeben werden
-6. Sie sind mindestens 18 Jahre alt
+4. Sie stimmen der Verarbeitung Ihrer Daten zu Forschungszwecken zu
+5. Sie stimmen zu, dass Ihre Bewertungen und Hintergrundinformationen als anonymisierter offener Datensatz veröffentlicht werden
+6. Sie verstehen, dass Ihr Name und Ihre E-Mail-Adresse niemals veröffentlicht und nicht an Dritte weitergegeben werden
+7. Sie sind mindestens 18 Jahre alt
