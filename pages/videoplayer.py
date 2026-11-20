@@ -5,14 +5,13 @@ Displays videos with customizable rating scales and optional metadata/pitch visu
 import streamlit as st
 import streamlit.components.v1 as components
 import os
-import pandas as pd
 import random
 import base64
 import html
 from io import BytesIO
 
 from utils.config_loader import load_rating_scales
-from utils.data_persistence import save_rating, get_rated_videos_for_user
+from utils.data_persistence import save_rating, get_rated_videos_for_user, get_rating_counts_per_video
 from utils.video_rating_display import display_video_rating_interface
 from utils.r2_manager import list_video_filenames, get_video_url, download_file_to_temp
 from utils.metadata_loader import load_metadata
@@ -307,13 +306,14 @@ def initialize_video_player(config):
     videos_rated_by_user = get_rated_videos_for_user(user.user_id)
     unrated_videos = [v for v in all_videos if v.replace('.mp4', '') not in videos_rated_by_user]
 
-    # Count total ratings per video and filter out fully-rated videos
+    # Count total ratings per video (Google Sheets first, local JSON fallback)
+    # and filter out videos that already have enough ratings
     try:
-        rated_files = os.listdir('user_ratings')
-        rated_ids = [f.split('_')[1].replace('.json', '') for f in rated_files if f.endswith('.json')]
-        rating_counts = pd.Series(rated_ids).value_counts()
-        videos_fully_rated = rating_counts[rating_counts >= min_ratings_per_video].index.tolist()
+        rating_counts = get_rating_counts_per_video()
+        videos_fully_rated = {vid for vid, n in rating_counts.items() if n >= min_ratings_per_video}
         videos_to_rate = [v for v in unrated_videos if v.replace('.mp4', '') not in videos_fully_rated]
+        print(f"[INFO] {len(videos_fully_rated)} videos have >= {min_ratings_per_video} ratings; "
+              f"{len(videos_to_rate)} of {len(unrated_videos)} unrated videos remain eligible")
     except Exception as e:
         print(f"[WARNING] Error filtering fully-rated videos: {e}")
         videos_to_rate = unrated_videos

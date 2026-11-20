@@ -9,6 +9,7 @@ from datetime import datetime
 from utils.gsheets_manager import (
     append_rating_to_gsheets,
     get_rated_videos_for_user_from_gsheets,
+    get_rating_counts_per_video_from_gsheets,
     append_user_to_gsheets,
     user_exists_in_gsheets
 )
@@ -277,3 +278,38 @@ def get_rated_videos_for_user(user_id):
     except Exception as e:
         print(f"[ERROR] Failed to get rated videos from both sources: {e}")
         return []
+
+
+def get_rating_counts_per_video():
+    """
+    Count how many ratings each video has received across all users.
+    Tries Google Sheets first (primary), falls back to local JSON (backup).
+
+    Returns:
+    - Dict mapping action ID (without .mp4 extension) -> number of ratings
+    """
+    # PRIMARY: Try Google Sheets first
+    try:
+        gsheets_counts = get_rating_counts_per_video_from_gsheets(worksheet="ratings")
+        if gsheets_counts is not None:
+            print(f"[INFO] Retrieved rating counts for {len(gsheets_counts)} videos from Google Sheets")
+            return gsheets_counts
+    except Exception as e:
+        print(f"[WARNING] Failed to get rating counts from Google Sheets: {e}")
+
+    # FALLBACK: Count local JSON files ({user_id}_{action_id}.json)
+    counts = {}
+    try:
+        if not os.path.exists('user_ratings'):
+            return counts
+
+        for f in os.listdir('user_ratings'):
+            if f.endswith('.json') and '_' in f:
+                action_id = f.replace('.json', '').split('_', 1)[1]
+                counts[action_id] = counts.get(action_id, 0) + 1
+
+        print(f"[INFO] Retrieved rating counts for {len(counts)} videos from JSON backup")
+        return counts
+    except Exception as e:
+        print(f"[ERROR] Failed to get rating counts from both sources: {e}")
+        return counts

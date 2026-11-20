@@ -196,6 +196,30 @@ def get_rated_videos_for_user_from_gsheets(user_id, worksheet="ratings"):
         return []
 
 
+def get_rating_counts_per_video_from_gsheets(worksheet="ratings"):
+    """
+    Count how many ratings each video has received, across all users, from Google Sheets.
+
+    Parameters:
+        worksheet: Name of worksheet to read from (default: "ratings")
+
+    Returns:
+        Dict mapping action ID -> number of rating rows, or None if the sheet could not be read
+    """
+    try:
+        df = read_ratings_from_gsheets(worksheet=worksheet)
+
+        if df.empty or 'id' not in df.columns:
+            return None
+
+        counts = df['id'].astype(str).value_counts()
+        return counts.to_dict()
+
+    except Exception as e:
+        print(f"[ERROR] Failed to count ratings per video from Google Sheets: {e}")
+        return None
+
+
 def append_user_to_gsheets(user_data, worksheet="users"):
     """
     Append a single user row to Google Sheets using true append (no overwrite).

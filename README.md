@@ -40,7 +40,7 @@ paths:
   r2_familiarization_prefix: "videos_familiarization/"
 
 settings:
-  min_ratings_per_video: 2   # stop showing a video once it has this many ratings
+  min_ratings_per_video: 2   # stop showing a video once it has this many ratings (counted from Google Sheets, local JSON fallback)
 
   # --- Files ---
   questionnaire_fields_file: "config/questionnaire_fields.yaml"
